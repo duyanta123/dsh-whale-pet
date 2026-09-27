@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>鲸鱼娘桌宠 · 形象合成预览</title>
+<style>
+  * { box-sizing:border-box; }
+  body { font-family:"Microsoft YaHei",sans-serif; margin:0; height:100vh; display:flex; flex-direction:column;
+         background:linear-gradient(160deg,#0f1e33 0%,#16324f 55%,#1b4a6b 100%); color:#dce8f5; }
+  header { display:flex; align-items:center; gap:18px; padding:10px 18px; border-bottom:1px solid rgba(255,255,255,.12); }
+  header img { width:44px; height:44px; border-radius:50%; background:#fff; object-fit:contain; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  .tabs { display:flex; gap:8px; margin-left:auto; }
+  .tab { padding:7px 14px; border-radius:18px; border:1px solid rgba(255,255,255,.25); background:transparent;
+         color:#dce8f5; cursor:pointer; font-size:13px; }
+  .tab.on { background:#2f80ed; border-color:#2f80ed; }
+  main { flex:1; display:flex; min-height:0; }
+  #stage { flex:1; position:relative; overflow:hidden;
+    background:
+      linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px),
+      radial-gradient(ellipse at 50% 78%, rgba(47,128,237,.25), transparent 60%);
+    background-size:28px 28px,28px 28px,100% 100%; }
+  #hint { position:absolute; left:14px; top:10px; font-size:12px; color:rgba(220,232,245,.55); }
+  #pet { position:absolute; left:50%; top:58%; transform:translate(-50%,-50%); cursor:grab; user-select:none;
+         touch-action:none; text-align:center; }
+  #pet:active { cursor:grabbing; }
+  #pet img,#pet video { width:var(--size,240px); display:block; filter:drop-shadow(0 12px 18px rgba(0,0,0,.45)); }
+  #bubble { position:absolute; right:-30px; top:-70px; width:190px; background:#fff; color:#222; border-radius:12px;
+            padding:6px; box-shadow:0 6px 20px rgba(0,0,0,.35); display:none; }
+  #bubble img { width:100%; border-radius:8px; display:block; }
+  #bubble:after { content:""; position:absolute; left:24px; bottom:-12px; border:7px solid transparent; border-top-color:#fff; }
+  #stateName { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); font-size:12px;
+               background:rgba(0,0,0,.4); padding:4px 12px; border-radius:12px; color:#bcd3ea; }
+  aside { width:330px; border-left:1px solid rgba(255,255,255,.12); padding:14px; overflow-y:auto; background:rgba(0,0,0,.18); }
+  aside h3 { font-size:13px; margin:14px 0 8px; color:#9fc2e8; }
+  #states { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+  .st { padding:7px 6px; font-size:12px; border-radius:8px; border:1px solid rgba(255,255,255,.18);
+        background:rgba(255,255,255,.06); color:#dce8f5; cursor:pointer; text-align:center;
+        overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .st.on { background:#2f80ed; border-color:#2f80ed; }
+  .row { display:flex; gap:8px; margin-top:10px; }
+  .btn { flex:1; padding:8px 0; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08);
+         color:#dce8f5; cursor:pointer; font-size:13px; }
+  .btn.on { background:#27ae60; border-color:#27ae60; }
+  label.sl { display:block; font-size:12px; color:#9fc2e8; margin-top:12px; }
+  input[type=range] { width:100%; }
+  footer { padding:8px 18px; font-size:11.5px; color:rgba(220,232,245,.5); border-top:1px solid rgba(255,255,255,.1); }
+</style>
+</head>
+<body>
+<header>
+  <img src="../assets/classic/avatar.png" alt="头像">
+  <h1>鲸鱼娘桌宠 · 形象合成预览 <span style="font-size:12px;color:#8fb0d1;">（拖动她 / 点状态 / 换皮肤）</span></h1>
+  <div class="tabs" id="tabs"></div>
+</header>
+<main>
+  <div id="stage">
+    <div id="hint">网格仅为参照 · 她是悬浮的，拖动试试 →</div>
+    <div id="pet">
+      <div id="bubble"><img id="bubbleImg" alt=""></div>
+      <div id="media"></div>
+    </div>
+    <div id="stateName"></div>
+  </div>
+  <aside>
+    <h3>状态 / 动作 <span id="cnt" style="color:#6f93b8;"></span></h3>
+    <div id="states"></div>
+    <div class="row">
+      <button class="btn" id="autoBtn">▶ 自动演示</button>
+      <button class="btn" id="memeBtn">💬 随机吐槽</button>
+    </div>
+    <label class="sl">大小 <span id="sizeVal">240</span>px
+      <input type="range" id="size" min="120" max="420" value="240">
+    </label>
+    <h3>这套预览是什么</h3>
+    <div style="font-size:12px; line-height:1.8; color:#b8cde3;">
+      最终桌宠 = <b>状态机</b>（监听 DSH 干活/出错/完成）× <b>皮肤系统</b>（四套形象随时切换，就是上面的标签页）× <b>表情包吐槽气泡</b>（干活时随机发梗图）。<br><br>
+      ⚠️ 鲸鱼娘形象 CC BY-NC-SA 4.0（署名·非商用）；表情包仅限个人使用；四套形象源仓库均为 MIT（形象本身除外）。
+    </div>
+  </aside>
+</main>
+<footer>素材来源：Sutera-Diffusus/dsh-whale-musume（92 精灵）· vlln/whale-girl（15 状态+原画头像）· yanzwzz/dsh-whale-girl-pet（50 段透明动画）· gmskywalker/deepseek-fat-fish-codex-pet（彩蛋）· 梗鲸图库（表情包 30/474 张抽样）</footer>
+<script src="../assets/manifest.js"></script>
+<script>
+const M = window.PET_MANIFEST;
+const SKINS = [
+  { id:'musume',  name:'② 元气精灵 (92)', items:M.musume,  type:'img',   prefer:/idle-cute/ },
+  { id:'webm',    name:'③ 高清动画 (50)', items:M.webm,    type:'video', prefer:/待机|沉眠/ },
+  { id:'classic', name:'① 经典女仆 (15)', items:M.classic, type:'img',   prefer:/^idle$/ },
+  { id:'fatfish', name:'🐟 大肥鱼 (4)',   items:M.fatfish, type:'img',   prefer:/idle/ },
+];
+let skin = SKINS[0], stateIdx = 0, timer = null;
+
+const $ = s => document.querySelector(s);
+const tabs = $('#tabs'), statesEl = $('#states'), mediaEl = $('#media');
+
+function renderTabs(){
+  tabs.innerHTML = '';
+  SKINS.forEach(s=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (s===skin ? ' on' : '');
+    b.textContent = s.name;
+    b.onclick = ()=>{ skin = s; stateIdx = defaultIdx(s); renderTabs(); renderStates(); playState(); };
+    tabs.appendChild(b);
+  });
+}
+function renderStates(){
+  statesEl.innerHTML = '';
+  $('#cnt').textContent = '共 ' + skin.items.length + ' 个';
+  skin.items.forEach((it,i)=>{
+    const b = document.createElement('button');
+    b.className = 'st' + (i===stateIdx ? ' on' : '');
+    b.textContent = it.state;
+    b.title = it.state;
+    b.onclick = ()=>{ stopAuto(); stateIdx = i; renderStates(); playState(); };
+    statesEl.appendChild(b);
+  });
+}
+function playState(){
+  const it = skin.items[stateIdx];
+  mediaEl.innerHTML = '';
+  if (skin.type === 'video'){
+    const v = document.createElement('video');
+    v.src = '../' + it.file; v.autoplay = true; v.loop = true; v.muted = true; v.playsInline = true;
+    mediaEl.appendChild(v);
+  } else {
+    const img = document.createElement('img');
+    img.src = '../' + it.file; img.alt = it.state;
+    mediaEl.appendChild(img);
+  }
+  $('#stateName').textContent = skin.name.split(' ')[0] + ' · ' + it.state;
+}
+/* 默认状态优先选 idle 类 */
+function defaultIdx(s){
+  const p = s.items.findIndex(it => s.prefer.test(it.state));
+  return p >= 0 ? p : 0;
+}
+/* 自动演示 */
+function stopAuto(){ if(timer){ clearInterval(timer); timer=null; $('#autoBtn').classList.remove('on'); $('#autoBtn').textContent='▶ 自动演示'; } }
+$('#autoBtn').onclick = ()=>{
+  if (timer) return stopAuto();
+  $('#autoBtn').classList.add('on'); $('#autoBtn').textContent='⏸ 停止演示';
+  timer = setInterval(()=>{ stateIdx = (stateIdx+1) % skin.items.length; renderStates(); playState(); }, 2600);
+};
+/* 表情包吐槽 */
+$('#memeBtn').onclick = ()=>{
+  const b = $('#bubble');
+  $('#bubbleImg').src = '../' + M.memes[Math.floor(Math.random()*M.memes.length)];
+  b.style.display = 'block';
+  clearTimeout(b._t); b._t = setTimeout(()=> b.style.display='none', 5000);
+};
+$('#bubble').onclick = ()=> $('#bubble').style.display='none';
+/* 大小 */
+$('#size').oninput = e=>{ document.documentElement.style.setProperty('--size', e.target.value+'px'); $('#sizeVal').textContent = e.target.value; };
+/* 拖动 */
+const pet = $('#pet'), stage = $('#stage');
+pet.addEventListener('pointerdown', e=>{
+  stopAuto();
+  const r = pet.getBoundingClientRect();
+  const dx = e.clientX - r.left, dy = e.clientY - r.top;
+  const move = ev=>{
+    const sr = stage.getBoundingClientRect();
+    pet.style.left = Math.min(Math.max(ev.clientX - sr.left - dx, 0), sr.width - r.width) + 'px';
+    pet.style.top  = Math.min(Math.max(ev.clientY - sr.top  - dy, 0), sr.height - r.height) + 'px';
+    pet.style.transform = 'none';
+  };
+  const up = ()=>{ removeEventListener('pointermove',move); removeEventListener('pointerup',up); };
+  addEventListener('pointermove',move); addEventListener('pointerup',up);
+});
+/* 启动 */
+renderTabs(); stateIdx = defaultIdx(); renderStates(); playState();
+</script>
+</body>
+</html>
