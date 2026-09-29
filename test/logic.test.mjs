@@ -15,10 +15,11 @@ const local = (over = {}) => ({
 })
 const burst = (name, until = NOW + 1000) => ({ windows: [{ name, until }] })
 
-test('STATE_NAMES 与 docs/state-machine.md §2 一致（15 状态）', () => {
+test('STATE_NAMES 与 docs/state-machine.md §2 一致（15 agent 状态 + 3 热区反应）', () => {
   assert.deepEqual([...STATE_NAMES], [
     'idle', 'working', 'celebrate', 'error', 'disappointed', 'joy', 'eat', 'play',
     'drag', 'walk', 'sleep', 'wake', 'welcome', 'think', 'wait',
+    'react-head', 'react-belly', 'react-tail',
   ])
 })
 
@@ -58,10 +59,15 @@ test('activeBurst：取首个未过期窗口；空/全过期返回 null', () => 
   assert.equal(activeBurst(burst('celebrate'), NOW)?.name, 'celebrate')
 })
 
-test('R4-R6 eat/play/wake 瞬发顺序', () => {
+test('R4-R6 eat/play/wake 瞬发顺序 + 热区反应行', () => {
   assert.equal(selectState(facts(), local({ transient: 'eat' }), NOW), 'eat')
   assert.equal(selectState(facts(), local({ transient: 'play' }), NOW), 'play')
+  assert.equal(selectState(facts(), local({ react: 'head' }), NOW), 'react-head')
+  assert.equal(selectState(facts(), local({ react: 'belly' }), NOW), 'react-belly')
+  assert.equal(selectState(facts(), local({ react: 'tail' }), NOW), 'react-tail')
   assert.equal(selectState(facts(), local({ transient: 'wake' }), NOW), 'wake')
+  // 热区反应低于 eat/play 瞬发（同时发生时投喂优先）。
+  assert.equal(selectState(facts(), local({ transient: 'eat', react: 'tail' }), NOW), 'eat')
 })
 
 test('R7 wait 等审批：低于瞬发、高于回合庆祝与 working', () => {

@@ -12,7 +12,7 @@
 - **client half（选择 + 渲染）**：`STATE_TABLE` 声明表遍历首个命中即返回；本地交互
   （拖拽/喂食/转身/睡觉）由 client 自持，窗口结束后重算底层派生状态，不硬编码回 idle。
 
-## 2. 状态集合（15 个）
+## 2. 状态集合（15 agent 状态 + 3 热区反应）
 
 | 状态 | 含义 | 素材主链（详见 sprites-spec） |
 |---|---|---|
@@ -41,6 +41,7 @@ R3  事件 burst       Node 事实窗口 {name≠idle, until>now}，resolve=name
                     （welcome / celebrate / error / disappointed）
 R4  eat 瞬发         本地 transient==='eat'
 R5  play 瞬发        本地 transient==='play'
+R5.5 热区反应       本地 react（'head'|'belly'|'tail'，~2.2s 瞬发；低于投喂瞬发）
 R6  wake 过渡        本地 transient==='wake'
 R7  wait 等审批      Node 事实窗口 name==='wait'（持续到解除）
 R8  celebrate 回合   本地 celebrateUntil（session running→false 边沿，6s）
