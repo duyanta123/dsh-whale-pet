@@ -10,6 +10,8 @@ test('Node half 导出面完整（name/apply/inject 与路由常量）', async (
   assert.deepEqual([...mod.inject], ['webServer'])
   assert.equal(mod.ASSETS_PATH, '/api/whale-pet/assets')
   assert.equal(mod.EVENTS_PATH, '/api/whale-pet/events')
+  assert.equal(mod.USAGE_PATH, '/api/whale-pet/usage')
+  assert.equal(mod.BALANCE_PATH, '/api/whale-pet/balance')
 })
 
 test('client 实现模块可加载（mountPet 导出）', async () => {
