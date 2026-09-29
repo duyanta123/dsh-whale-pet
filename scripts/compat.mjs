@@ -46,10 +46,13 @@ function run(args, { timeoutMs = 180_000 } = {}) {
 /** 启动 dsh web 并解析监听地址；探活成功或超时后返回 { url, stop() }。 */
 async function bootWebAndProbe({ expectPluginRoute }) {
   const child = spawn(
-    'dsh', ['web', '--profile', PROFILE, '--no-open', '--port', '0'],
+    'dsh', ['--profile', PROFILE, '--no-open', '--port', '0'],
     { shell: true, stdio: ['ignore', 'pipe', 'pipe'] },
   )
   let out = ''
+  let err = ''
+  child.stdout.on('data', (d) => { out += d })
+  child.stderr.on('data', (d) => { err += d })
   const stop = () => {
     try { child.kill() } catch {}
     if (process.platform === 'win32') {
@@ -58,22 +61,35 @@ async function bootWebAndProbe({ expectPluginRoute }) {
   }
   const deadline = Date.now() + BOOT_TIMEOUT_MS
   let base = null
+  let lastProbe = "never"
+  let lastLogAt = 0
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, 1000))
-    if (child.exitCode !== null) return { base: null, stop, exited: true, out }
+    if (child.exitCode !== null) return { base: null, stop, exited: true, out, err }
     const m = out.match(/https?:\/\/[^\s"'<>]+/)
-    if (m) base = m[0].replace(/[)\].,]+$/, '')
+    // base 只保留 origin：boot URL 形如 http://127.0.0.1:PORT/?token=…，
+    // 截掉 query 并去掉尾斜杠（否则拼出 //api/... 双斜杠 404）。
+    if (m) base = m[0].replace(/[)\].,]+$/, '').split('?')[0].replace(/\/+$/, '')
     if (base) {
       try {
         const res = await fetch(base + PROBE_PATH, { signal: AbortSignal.timeout(3000) })
         if (res.ok) {
           const body = await res.json().catch(() => null)
-          return { base, stop, exited: false, out, body }
+          return { base, stop, exited: false, out, err, body }
         }
-      } catch { /* 未就绪，继续等 */ }
+        lastProbe = `status ${res.status}`
+      } catch (error) {
+        lastProbe = `fetch: ${error?.message ?? error}${error?.cause ? ' / ' + (error.cause?.message ?? error.cause) : ''}`
+      }
+      if (Date.now() - lastLogAt > 5000) {
+        lastLogAt = Date.now()
+        console.log(`    …探活 ${Math.round((Date.now() - (deadline - BOOT_TIMEOUT_MS)) / 1000)}s ${base}${PROBE_PATH} → ${lastProbe}`)
+      }
+    } else if ((BOOT_TIMEOUT_MS - (deadline - Date.now())) % 15000 === 0) {
+      console.log(`    …boot ${Math.round((deadline - Date.now()) / 1000)}s：out=${JSON.stringify(out.slice(0, 120))} err=${JSON.stringify(err.slice(0, 120))}`)
     }
   }
-  return { base, stop, exited: child.exitCode !== null, out }
+  return { base, stop, exited: child.exitCode !== null, out, err }
 }
 
 console.log(`test:compat · 基线 @deepseek-ai/dsh@${EXPECTED_DSH_VERSION}`)
