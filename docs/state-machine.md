@@ -31,6 +31,7 @@
 | joy | 点赞/夸夸短喜（1.6s） | classic/joy → musume/meme-heart |
 | drag | 被拖拽悬空 | webm/被鼠标拖拽悬空反馈 → musume/react-* → classic/drag |
 | walk | 周期散步 | classic/walk → webm/螃蟹走路 |
+| react-head/belly/tail | 分区热区点击反应（M2） | musume/state-react-{head,belly,tail} |
 
 ## 3. 优先级行序（STATE_TABLE，首个命中即返回）
 
