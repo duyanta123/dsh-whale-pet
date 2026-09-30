@@ -22,16 +22,57 @@ let failures = 0
 const fail = (msg) => { failures += 1; console.error(`  ✗ ${msg}`) }
 const ok = (msg) => console.log(`  ✓ ${msg}`)
 
+/**
+ * Windows 进程树击杀（2026-09-30 实测修正，见开发计划附录 B）：
+ * 旧顺序 `child.kill()` → `taskkill /T` 会先杀死 shell 壳进程，
+ * 随后 taskkill 打在已死 PID 上失效，dsh 孙进程脱树泄漏并污染后续运行。
+ * 正确顺序：先对存活进程 taskkill /T /F，再补 child.kill()；
+ * 另按命令行特征（profile 名每次运行唯一，不误伤其他 dsh 会话）做脱树孙进程兜底清扫。
+ */
+function killTree(child, tag) {
+  if (process.platform === 'win32') {
+    try {
+      spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { shell: true })
+    } catch {}
+    try {
+      spawn('powershell', ['-NoProfile', '-Command',
+        `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | ` +
+        `Where-Object { $_.CommandLine -match '${tag}' } | ` +
+        `ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`], { shell: false })
+    } catch {}
+  }
+  try { child.kill() } catch {}
+}
+
+/** 查询命令行含 tag 的 node 进程 PID 列表（Windows）；查询失败返回 []（不因工具问题误判）。 */
+function sweepProfilePids(tag) {
+  if (process.platform !== 'win32') return Promise.resolve([])
+  return new Promise((resolveSweep) => {
+    try {
+      const child = spawn('powershell', ['-NoProfile', '-Command',
+        `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | ` +
+        `Where-Object { $_.CommandLine -match '${tag}' } | ` +
+        `ForEach-Object { $_.ProcessId }`], { shell: false })
+      let out = ''
+      child.stdout.on('data', (d) => { out += d })
+      child.on('error', () => resolveSweep([]))
+      child.on('close', (code) => {
+        if (code !== 0) return resolveSweep([])
+        resolveSweep(out.split(/\r?\n/).map((s) => s.trim()).filter(Boolean).map(Number))
+      })
+    } catch {
+      resolveSweep([])
+    }
+  })
+}
+
 function run(args, { timeoutMs = 180_000 } = {}) {
   return new Promise((resolveRun) => {
     const child = spawn('dsh', args, { shell: true, stdio: ['ignore', 'pipe', 'pipe'] })
     let out = ''
     let err = ''
     const timer = setTimeout(() => {
-      try { child.kill() } catch {}
-      if (process.platform === 'win32') {
-        try { spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { shell: true }) } catch {}
-      }
+      killTree(child, PROFILE)
       resolveRun({ code: -1, out, err, timedOut: true })
     }, timeoutMs)
     child.stdout.on('data', (d) => { out += d })
@@ -53,12 +94,7 @@ async function bootWebAndProbe({ expectPluginRoute }) {
   let err = ''
   child.stdout.on('data', (d) => { out += d })
   child.stderr.on('data', (d) => { err += d })
-  const stop = () => {
-    try { child.kill() } catch {}
-    if (process.platform === 'win32') {
-      try { spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { shell: true }) } catch {}
-    }
-  }
+  const stop = () => killTree(child, PROFILE)
   const deadline = Date.now() + BOOT_TIMEOUT_MS
   let base = null
   let lastProbe = "never"
@@ -139,6 +175,18 @@ try {
   ok('隔离 profile 已清理')
 } catch (error) {
   console.warn(`  ! 清理失败（可手动删除 ${profileDir}）：${error.message}`)
+}
+
+// 7) 泄漏自检：本次运行不得残留任何 dsh boot 进程（脱树孙进程曾致后续门禁并发卡死）。
+const leakPids = await sweepProfilePids(PROFILE)
+if (leakPids.length > 0) {
+  killTree({ pid: leakPids[0], kill() {} }, PROFILE)
+  await new Promise((r) => setTimeout(r, 2000))
+  const again = await sweepProfilePids(PROFILE)
+  if (again.length > 0) fail(`dsh boot 进程泄漏未清干净：${again.join(', ')}`)
+  else ok('dsh boot 进程泄漏自检：清扫后无残留')
+} else {
+  ok('dsh boot 进程泄漏自检：无残留')
 }
 
 if (failures > 0) {
