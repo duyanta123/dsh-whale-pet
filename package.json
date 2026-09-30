@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "type": "module",
   "description": "鲸鱼娘桌宠：住进 DSH web 的鲸鱼娘。状态镜像（干活/思考/等待审批/报错/庆祝/空闲）、分区热区、拖拽、喂食、表情包气泡、Token/费用仪表板、XP/等级/称号养成、可关闭的主动陪伴。A whale-girl desktop pet for the DeepSeek Harness Web UI.",
+  "icon": "assets/icon.png",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -20,12 +21,14 @@
     ".": "./lib/index.mjs",
     "./client": "./lib/client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
     "./package.json": "./package.json"
   },
   "files": [
     "lib",
     "assets",
     "docs",
+    "locale",
     "cordis.patch.yml",
     "README.md"
   ],
@@ -37,6 +40,7 @@
     "node": ">=22.19.0"
   },
   "dsh": {
+    "manifestVersion": 1,
     "bundle": {
       "patch": "./cordis.patch.yml"
     },
