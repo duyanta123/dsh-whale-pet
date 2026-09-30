@@ -15,10 +15,10 @@ const local = (over = {}) => ({
 })
 const burst = (name, until = NOW + 1000) => ({ windows: [{ name, until }] })
 
-test('STATE_NAMES 与 docs/state-machine.md §2 一致（15 agent 状态 + 3 热区反应）', () => {
+test('STATE_NAMES 与 docs/state-machine.md §2 一致（16 agent 状态 + 3 热区反应）', () => {
   assert.deepEqual([...STATE_NAMES], [
     'idle', 'working', 'celebrate', 'error', 'disappointed', 'joy', 'eat', 'play',
-    'drag', 'walk', 'sleep', 'wake', 'welcome', 'think', 'wait',
+    'drag', 'walk', 'sleep', 'wake', 'welcome', 'think', 'wait', 'night',
     'react-head', 'react-belly', 'react-tail',
   ])
 })

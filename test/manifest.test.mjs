@@ -17,8 +17,8 @@ const allContractFiles = () => {
   return files
 }
 
-test('状态契约：15 状态、链非空、kind/playback 合法', () => {
-  assert.equal(STATE_NAMES.length, 15)
+test('状态契约：16 状态（15 基础 + night）、链非空、kind/playback 合法', () => {
+  assert.equal(STATE_NAMES.length, 16)
   for (const [state, def] of Object.entries(STATE_ASSETS)) {
     assert.ok(def.chain.length >= 1, `${state} 链为空`)
     assert.ok(def.pick === 'first' || def.pick === 'random', `${state} pick 非法`)

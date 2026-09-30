@@ -12,7 +12,7 @@
 - **client half（选择 + 渲染）**：`STATE_TABLE` 声明表遍历首个命中即返回；本地交互
   （拖拽/喂食/转身/睡觉）由 client 自持，窗口结束后重算底层派生状态，不硬编码回 idle。
 
-## 2. 状态集合（15 agent 状态 + 3 热区反应）
+## 2. 状态集合（16 agent 状态 + 3 热区反应）
 
 | 状态 | 含义 | 素材主链（详见 sprites-spec） |
 |---|---|---|
@@ -31,6 +31,7 @@
 | joy | 点赞/夸夸短喜（1.6s） | classic/joy → musume/meme-heart |
 | drag | 被拖拽悬空 | webm/被鼠标拖拽悬空反馈 → musume/react-* → classic/drag |
 | walk | 周期散步 | classic/walk → webm/螃蟹走路 |
+| night | 深夜静音段内 idle 兜底困倦（M5-2） | musume/state-night → musume/work-sleep → classic/sleep |
 | react-head/belly/tail | 分区热区点击反应（M2） | musume/state-react-{head,belly,tail} |
 
 ## 3. 优先级行序（STATE_TABLE，首个命中即返回）
@@ -56,6 +57,17 @@ R14 idle 兜底       恒真
 
 行序即优先级：**事件反馈 > 用户交互反馈（burst/eat/play） > wake > wait（需用户注意） >
 回合庆祝 > working 插曲 > 陪伴（think） > 情绪（joy） > 生理（sleep） > 漫游（walk） > idle**。
+
+## 3.5 深夜静音段（M5-2，client 本地门控）
+
+深夜静音窗口（默认 23:00–07:00，本地时钟，可配可关）内：
+
+- **红线**：无主动气泡（关怀提醒/番茄钟/短剧全部静默，决策面在 `care.mjs`，静音段冻结番茄钟防跨窗补发）、无完成音效（Node half 播放前复查窗口）、无散步（`walkAllowed` 拒绝武装）。
+- **兜底视觉**：STATE_TABLE 命中 R14 idle 兜底行时显示 `night`（深夜困倦）而非 idle——实现为
+  `nightVisualState(selectState(...), nightMute)` 后置替换，不新增行序；`sleep→night` 不触发
+  wake 过渡（同为困倦视觉，`shouldWake` 排除 night）。
+- **状态镜像不静默**：think/wait/celebrate/error 等事实照常显示——深夜约束的是主动行为面，
+  不是状态镜像职责本身。
 
 ## 4. 事实窗口时长（Node half）
 
