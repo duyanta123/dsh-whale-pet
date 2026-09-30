@@ -1,0 +1,42 @@
+# dsh-whale-pet CI（M6-1）：node --test 单测 + test:compat 宿主探活双平台门禁。
+# 基线锁定 @deepseek-ai/dsh@0.1.7-rc.2（改基线须同步 scripts/compat.mjs 与开发计划 §1）。
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: unit (node --test)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+  compat:
+    name: compat (isolated profile probe)
+    strategy:
+      fail-fast: false
+      matrix:
+        # windows-latest 覆盖进程树击杀/泄漏自检路径（compat.mjs 的 win32 分支）
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install host baseline
+        run: npm i -g @deepseek-ai/dsh@0.1.7-rc.2
+      - name: Run compat gate
+        run: npm run test:compat

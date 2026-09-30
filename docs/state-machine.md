@@ -12,7 +12,7 @@
 - **client half（选择 + 渲染）**：`STATE_TABLE` 声明表遍历首个命中即返回；本地交互
   （拖拽/喂食/转身/睡觉）由 client 自持，窗口结束后重算底层派生状态，不硬编码回 idle。
 
-## 2. 状态集合（16 agent 状态 + 3 热区反应）
+## 2. 状态集合（17 agent 状态 + 3 热区反应）
 
 | 状态 | 含义 | 素材主链（详见 sprites-spec） |
 |---|---|---|
@@ -32,6 +32,7 @@
 | drag | 被拖拽悬空 | webm/被鼠标拖拽悬空反馈 → musume/react-* → classic/drag |
 | walk | 周期散步 | classic/walk → webm/螃蟹走路 |
 | night | 深夜静音段内 idle 兜底困倦（M5-2） | musume/state-night → musume/work-sleep → classic/sleep |
+| struggling | 遇挫细分：工具失败/模型重试后 15s（M6-4） | musume/state-meme-doubt → musume/work-debug |
 | react-head/belly/tail | 分区热区点击反应（M2） | musume/state-react-{head,belly,tail} |
 
 ## 3. 优先级行序（STATE_TABLE，首个命中即返回）
@@ -47,6 +48,7 @@ R5.5 热区反应       本地 react（'head'|'belly'|'tail'，~2.2s 瞬发；�
 R6  wake 过渡        本地 transient==='wake'
 R7  wait 等审批      Node 事实窗口 name==='wait'（持续到解除）
 R8  celebrate 回合   本地 celebrateUntil（session running→false 边沿，6s）
+R8.5 struggling 遇挫  Node 事实 struggling（M6-4：工具失败/llm 重试/错误收尾 15s 窗口）
 R9  working 插曲     节奏器 workingActive（12-30s 随机触发，2.5-6s 随机时长）
 R10 think 常态      Node 事实 thinking（任一会话 turn 活跃）
 R11 joy             本地 joyUntil（1.6s）

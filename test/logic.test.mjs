@@ -15,12 +15,21 @@ const local = (over = {}) => ({
 })
 const burst = (name, until = NOW + 1000) => ({ windows: [{ name, until }] })
 
-test('STATE_NAMES 与 docs/state-machine.md §2 一致（16 agent 状态 + 3 热区反应）', () => {
+test('STATE_NAMES 与 docs/state-machine.md §2 一致（17 agent 状态 + 3 热区反应）', () => {
   assert.deepEqual([...STATE_NAMES], [
     'idle', 'working', 'celebrate', 'error', 'disappointed', 'joy', 'eat', 'play',
-    'drag', 'walk', 'sleep', 'wake', 'welcome', 'think', 'wait', 'night',
+    'drag', 'walk', 'sleep', 'wake', 'welcome', 'think', 'wait', 'night', 'struggling',
     'react-head', 'react-belly', 'react-tail',
   ])
+})
+
+test('R8.5 struggling：遇挫事实盖过 working/think，低于 celebrate/wait', () => {
+  assert.equal(selectState(facts({ struggling: true }), local(), NOW), 'struggling')
+  assert.equal(selectState(facts({ struggling: true }), local({ workingActive: true }), NOW), 'struggling')
+  assert.equal(selectState(facts({ struggling: true, thinking: true }), local(), NOW), 'struggling')
+  assert.equal(selectState(facts({ struggling: true, wait: true }), local(), NOW), 'wait')
+  assert.equal(selectState({ windows: [{ name: 'error', until: NOW + 1000 }], struggling: true }, local(), NOW), 'error')
+  assert.equal(selectState(facts({ struggling: true }), local({ celebrateUntil: NOW + 1000 }), NOW), 'celebrate')
 })
 
 test('R1 drag：拖拽按住压倒一切', () => {
