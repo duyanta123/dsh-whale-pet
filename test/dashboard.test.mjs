@@ -32,8 +32,9 @@ test('barLayout：柱体几何归一化（最高柱顶满、空桶占位 h=0）'
 })
 
 test('barLayout：标签与 tooltip（小时 HH:00 / 天 MM-DD）', () => {
-  const t0 = Date.UTC(2026, 8, 14, 2, 0) // 北京 10:00
-  const day0 = Date.UTC(2026, 8, 14, 0, 0)
+  // 用本地时间构造（dashboard 标签按本地时区格式化；用例须时区无关——CI 在 UTC）
+  const t0 = new Date(2026, 8, 14, 10, 0).getTime() // 本地 10:00
+  const day0 = new Date(2026, 8, 14, 12, 0).getTime() // 本地正午，避开日界
   const [hourBar] = barLayout([bucket(t0, 1234567, 0.1, 0.2, 0.05)], 'hours')
   assert.equal(hourBar.label, '10:00')
   assert.ok(hourBar.tip.includes('1.23M'))
@@ -48,7 +49,7 @@ test('barLayout：费用三桶合计（round4）', () => {
 })
 
 test('axisLabel：范围文案', () => {
-  const t0 = Date.UTC(2026, 8, 14, 2, 0)
+  const t0 = new Date(2026, 8, 14, 10, 0).getTime() // 本地 10:00（时区无关）
   assert.ok(axisLabel([bucket(t0, 1)], 'hours').includes('10:00'))
   assert.ok(axisLabel([], 'days') === '')
 })
