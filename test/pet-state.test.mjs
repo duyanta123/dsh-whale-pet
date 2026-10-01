@@ -6,6 +6,7 @@ import {
   INITIAL_STATE, MEMORY_MAX, TASK_XP, SESSION_XP, RESUME_XP, ACTIVE_CAP_MS,
   xpForLevel, levelFor, TITLES, titleName,
   recordTaskCompleted, recordFailure, recordSession, recordSessionResume, recordActive,
+  taskOutcomeOfEndReason,
 } from '../lib/pet-state.mjs'
 
 const NOW = 1_700_000_000_000
@@ -135,4 +136,31 @@ test('回忆环形：最多 MEMORY_MAX=8 条，新的挤掉旧的', () => {
   assert.equal(s.memory.length, MEMORY_MAX)
   assert.ok(s.memory[s.memory.length - 1].includes('任务12'))
   assert.ok(!s.memory.some((m) => m.includes('任务1）'))) // 最早 4 条被挤出（升级回忆另计）
+})
+
+// ---- M6-3 桌面端实测修正：turn/end 终态 → 记账动作（chat 轮次无 jobs.settled）----
+
+test('taskOutcomeOfEndReason：completed → completed（对象形态，0.2.0 TurnEndReason）', () => {
+  assert.equal(taskOutcomeOfEndReason({ kind: 'completed' }), 'completed')
+})
+
+test('taskOutcomeOfEndReason：error → failed（LlmFailure 载荷取 kind）', () => {
+  assert.equal(taskOutcomeOfEndReason({ kind: 'error', error: { name: 'X' } }), 'failed')
+})
+
+test('taskOutcomeOfEndReason：aborted/interrupted/max-tokens/forked/blocked 全部中性', () => {
+  assert.equal(taskOutcomeOfEndReason({ kind: 'aborted', reason: 'user' }), null)
+  assert.equal(taskOutcomeOfEndReason({ kind: 'interrupted' }), null)
+  assert.equal(taskOutcomeOfEndReason({ kind: 'max-tokens' }), null)
+  assert.equal(taskOutcomeOfEndReason({ kind: 'forked' }), null)
+  assert.equal(taskOutcomeOfEndReason({ kind: 'blocked' }), null)
+})
+
+test('taskOutcomeOfEndReason：旧版字符串 reason 与缺参兜底', () => {
+  assert.equal(taskOutcomeOfEndReason('completed'), 'completed')
+  assert.equal(taskOutcomeOfEndReason('error'), 'failed')
+  assert.equal(taskOutcomeOfEndReason('blocked'), null)
+  assert.equal(taskOutcomeOfEndReason(undefined), null)
+  assert.equal(taskOutcomeOfEndReason(null), null)
+  assert.equal(taskOutcomeOfEndReason({}), null)
 })
