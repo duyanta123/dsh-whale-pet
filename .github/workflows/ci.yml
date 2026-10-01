@@ -1,5 +1,5 @@
 # dsh-whale-pet CI（M6-1）：node --test 单测 + test:compat 宿主探活双平台门禁。
-# 基线锁定 @deepseek-ai/dsh@0.1.7-rc.2（改基线须同步 scripts/compat.mjs 与开发计划 §1）。
+# compat 双车道自装宿主（0.1.7-rc.2 + 0.2.0-rc.2，npm 隔离安装，不动全局）；改车道须同步 scripts/compat.mjs 与开发计划 §1。
 name: CI
 
 on:
@@ -38,9 +38,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install host baseline
-        run: |
-          npm i -g pnpm
-          npm i -g @deepseek-ai/dsh@0.1.7-rc.2
-      - name: Run compat gate
+      # dsh 由 scripts/compat.mjs 按车道隔离安装进临时目录；pnpm 必须在 PATH（dsh plugin add 转发）。
+      - name: Install pnpm
+        run: npm i -g pnpm
+      - name: Run compat gate (both lanes)
         run: npm run test:compat

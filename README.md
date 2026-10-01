@@ -4,12 +4,24 @@
 状态镜像（干活/思考/等待审批/报错/庆祝/空闲）、分区热区互动、拖拽、喂食、表情包气泡、
 Token/费用仪表板、XP/等级/称号养成、可全部关闭的主动陪伴。
 
-> 宿主基线：`@deepseek-ai/dsh@0.1.7-rc.2`（npm next 标签）。开发任务清单（鲸鱼娘桌宠-开发计划）为本地策划文档，不随仓库分发。
+> 宿主基线（双车道）：`@deepseek-ai/dsh@0.1.7-rc.2`（存量 web 车道）+ `0.2.0-rc.2`（npm latest/next，与官方桌面端 0.2.0-rc.2 内置 runtime 同版）。兼容门禁经 `peerDependencies: { "@deepseek-ai/dsh": ">=0.1.7-rc.2" }` 声明。开发任务清单（鲸鱼娘桌宠-开发计划）为本地策划文档，不随仓库分发。
 
-## 安装（开发版）
+## 安装（官方桌面端）
+
+桌面端（`@deepseek-ai/dsh-desktop` ≥ 0.2.0-rc.2）自带 dsh runtime 与 Node/pnpm，无需另装任何 CLI：
+
+1. 启动一次 DeepSeek Harness Desktop（初始化保留 profile `desktop`），然后**完全退出**（Windows 托盘图标 → Quit）。
+2. 安装本插件（二选一）：
+   - 应用内：设置 → 插件管理器，添加本仓库路径或 git 源；
+   - CLI：经桌面端菜单 **Manage dsh Command…** 安装 dsh 命令后，在终端运行 `dsh plugin --profile desktop add <本仓库路径>`。
+3. 重新打开桌面端，右下角出现鲸鱼娘；设置面板出现「鲸鱼娘桌宠」卡片。
+
+注意：`desktop` profile 由 Electron 应用独占——npm 全局安装的 `dsh` 会对它报错拒绝，必须在应用完全退出后用桌面自带 CLI 操作，或直接走应用内管理器。CLI 版本跟随桌面端 release。
+
+## 安装（dsh web）
 
 ```bash
-npm i -g @deepseek-ai/dsh@0.1.7-rc.2
+npm i -g @deepseek-ai/dsh@0.1.7-rc.2   # 或当前 npm latest（0.2.0-rc.2）
 dsh plugin --profile web add <本仓库路径>
 # 重启 dsh web 后，右下角出现鲸鱼娘；设置面板出现「鲸鱼娘桌宠」卡片。
 ```
@@ -23,10 +35,18 @@ git clone <本仓库> && dsh plugin --profile web add ./whale-pet
 ## 开发
 
 ```bash
-npm test          # node --test 单测（纯函数域）
-npm run test:compat  # 隔离 profile 安装 + 配置 dump + 限时启动探活（锁定 0.1.7-rc.2）
-node serve.js     # 素材回归预览页（demo/，与插件宿主无关）
+npm test             # node --test 单测（纯函数域）
+npm run test:compat  # 双车道探活：0.1.7-rc.2 + 0.2.0-rc.2 各自隔离 npm 安装进临时目录（不动全局），
+                     # 每车道走 init profile → add → dump → 限时启动探活；可传参跑单车道，如 node scripts/compat.mjs 0.2.0-rc.2
+node scripts/desktop-probe.mjs <桌面端安装目录>  # 解包桌面端 app.asar，核对本插件宿主耦合面（零依赖）
+node serve.js        # 素材回归预览页（demo/，与插件宿主无关）
 ```
+
+### 宿主升级跟随（每次官方 release）
+
+1. `node scripts/desktop-probe.mjs <桌面端安装目录>`——核对槽位/事件/注入/路由/兼容门禁等全部耦合面；
+2. `npm run test:compat`——双车道探活；
+3. 桌面端真机冒烟：装入 `desktop` profile 后核对状态镜像、热区/拖拽、设置卡、telemetry 融合气泡与深夜红线。
 
 ## 数据融合（M6-4，dsh-local-telemetry）
 
@@ -47,8 +67,8 @@ webm 按状态懒加载（进状态才装载，全库 26MB 不预载）；标签
 
 ## Roadmap（M6 收口时点）
 
-- 官方桌面端（Electron `apps/desktop`）实测：0.1.7-rc.2 的 `dsh` CLI 尚无 desktop 应用（`dsh --help` 仅 web/tui/headless/rescue），窗口级能力（桌宠悬浮于应用窗口之外）待官方发布后实测。
-- 周报完整闭环：`dsh-data-insight` 的 `skills/data-insight-runbook` 产物经 `/api/whale-pet/announce` 递送的调度编排。
+- 官方桌面端 M6-3 实测（进行中）：`@deepseek-ai/dsh-desktop@0.2.0-rc.2` 已于 2026-09-29 发布，本插件宿主耦合面已解包核验通过（`scripts/desktop-probe.mjs`）；**窗口级能力已裁定：官方未暴露悬浮窗 API**（桌面 preload 仅提供启动就绪/目录选择/路径桥/Browser 桥，无 alwaysOnTop/透明悬浮窗类 IPC）——桌宠仍限于应用窗口内，出窗待二期 Tauri 伴侣壳。剩桌面端真机冒烟（安装/状态镜像/热区/设置卡/telemetry 融合）。
+- 周报完整闭环：`dsh-data-insight` 的 `skills/data-insight-runbook` 产物经 `/api/whale-pet/announce` 递送的调度编排（注意 0.2.0 起自动化任务改由可选插件包提供，编排需确认目标 profile 已启用 schedule 包）。
 - 二期 Backlog：泡泡小游戏 / 成就系统 / 节日换装 / 动态 bbox 逐帧热区 / Live2D / 多角色 / Supabase 表情包热链 / Tauri 伴侣壳（见开发计划 §4）。
 
 ## 主动陪伴（M5）功能开关

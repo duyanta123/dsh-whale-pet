@@ -39,6 +39,9 @@
   "engines": {
     "node": ">=22.19.0"
   },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": ">=0.1.7-rc.2"
+  },
   "dsh": {
     "manifestVersion": 1,
     "bundle": {
