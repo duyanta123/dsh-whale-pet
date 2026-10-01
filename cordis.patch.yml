@@ -1,7 +1,7 @@
-# dsh-whale-pet bundle patch：向 web 组合挂载鲸鱼娘桌宠。
+# dsh-whalegirl bundle patch：向 web 组合挂载鲸鱼娘桌宠。
 # id = 配置树插件行标识（全局唯一）；name = 本包（解析 lib/index.mjs 宿主半侧；
 # package.json 的 dsh.client 声明同时让模块系统把它扫描为浏览器插件）。
 # 仅 insert，无 replace/remove（与宿主组合零冲突）。
 - insert:
     - id: whale-pet
-      name: dsh-whale-pet
+      name: dsh-whalegirl

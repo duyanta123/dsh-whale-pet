@@ -1,0 +1,59 @@
+# npm 自动发版：push 到主干时，若 package.json 版本号在 registry 上不存在则自动 publish 并打 v<tag>。
+# 前置：仓库 Secrets 配 NPM_TOKEN（npmjs.com → Access Tokens → Generate，Automation/Granular 均可）。
+# 语义：push 不带版本号变更 = 只跑测试不发版；npm 同版本不可重发，因此「发版 = bump version」。
+name: Publish
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write # 发布成功后回写 git tag
+  id-token: write # npm --provenance（public 包来源证明）
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false # 排队执行，不中断进行中的发布
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Unit tests
+        run: npm test
+
+      # 版本门禁：name@version 已在 registry → 跳过；E404 → 待发布。
+      - name: Check version against registry
+        id: gate
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION 已在 registry，跳过发布"
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "$NAME@$VERSION 待发布"
+          fi
+
+      - name: Publish to npm
+        if: steps.gate.outputs.publish == 'true'
+        run: npm publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # 发布成功后打 v<version> tag（幂等；tag push 不触发任何 workflow）。
+      - name: Tag release
+        if: steps.gate.outputs.publish == 'true'
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "v$VERSION" && git push -f origin "v$VERSION"

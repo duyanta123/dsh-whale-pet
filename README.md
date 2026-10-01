@@ -1,4 +1,4 @@
-# dsh-whale-pet · 鲸鱼娘桌宠
+# dsh-whalegirl · 鲸鱼娘桌宠
 
 住进 [DeepSeek Harness（DSH）](https://github.com/deepseek-ai/deepseek-harness) Web 界面的鲸鱼娘桌宠插件：
 状态镜像（干活/思考/等待审批/报错/庆祝/空闲）、分区热区互动、拖拽、喂食、表情包气泡、
@@ -12,8 +12,8 @@ Token/费用仪表板、XP/等级/称号养成、可全部关闭的主动陪伴�
 
 1. 启动一次 DeepSeek Harness Desktop（初始化保留 profile `desktop`），然后**完全退出**（Windows 托盘图标 → Quit）。
 2. 安装本插件（二选一）：
-   - 应用内：设置 → 插件管理器，添加本仓库路径或 git 源；
-   - CLI：经桌面端菜单 **Manage dsh Command…** 安装 dsh 命令后，在终端运行 `dsh plugin --profile desktop add <本仓库路径>`。
+   - 应用内：设置 → 插件管理器，添加 npm 包名 `dsh-whalegirl`、git 源或本仓库路径；
+   - CLI：经桌面端菜单 **Manage dsh Command…** 安装 dsh 命令后，在终端运行 `dsh plugin --profile desktop add dsh-whalegirl`（或 git 源/本地路径）。
 3. 重新打开桌面端，右下角出现鲸鱼娘；设置面板出现「鲸鱼娘桌宠」卡片。
 
 注意：`desktop` profile 由 Electron 应用独占——npm 全局安装的 `dsh` 会对它报错拒绝，必须在应用完全退出后用桌面自带 CLI 操作，或直接走应用内管理器。CLI 版本跟随桌面端 release。
@@ -22,14 +22,15 @@ Token/费用仪表板、XP/等级/称号养成、可全部关闭的主动陪伴�
 
 ```bash
 npm i -g @deepseek-ai/dsh@0.1.7-rc.2   # 或当前 npm latest（0.2.0-rc.2）
-dsh plugin --profile web add <本仓库路径>
+dsh plugin --profile web add dsh-whalegirl   # npm 源（版本随 GitHub push 自动发版）
 # 重启 dsh web 后，右下角出现鲸鱼娘；设置面板出现「鲸鱼娘桌宠」卡片。
 ```
 
-git 源分发（无 npm 包时的等价方式）：
+git 源 / 本地路径安装（等价方式）：
 
 ```bash
-git clone <本仓库> && dsh plugin --profile web add ./whale-pet
+dsh plugin --profile web add github:duyanta123/dsh-whale-pet
+# 或：git clone https://github.com/duyanta123/dsh-whale-pet && dsh plugin --profile web add ./dsh-whale-pet
 ```
 
 ## 开发

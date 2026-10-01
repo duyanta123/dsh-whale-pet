@@ -1,5 +1,5 @@
 // 校验 0.1.7 插件元数据链：exports 放行 locale 子路径、icon 字段、locale 文件格式。
-// 宿主 readPluginMeta 语义：resolvePluginResource('dsh-whale-pet/locale/en.json') 经 ESM resolver。
+// 宿主 readPluginMeta 语义：resolvePluginResource('dsh-whalegirl/locale/en.json') 经 ESM resolver。
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { pathToFileURL } from 'node:url'
@@ -15,6 +15,6 @@ for (const lang of ['en', 'zh']) {
 
 // ESM resolver 端到端：模拟宿主从 profile node_modules 解析包子路径（本包以 link: 软链安装）。
 const parentURL = pathToFileURL(root + 'lib/index.mjs').href
-const spec = 'dsh-whale-pet/locale/en.json'
+const spec = 'dsh-whalegirl/locale/en.json'
 const resolved = import.meta.resolve(spec, parentURL)
 console.log('resolve(' + spec + ') =', resolved)

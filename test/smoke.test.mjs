@@ -29,7 +29,7 @@ test('cordis.patch.yml 仅 insert 且行合法', () => {
   const yml = readFileSync(new URL('../cordis.patch.yml', import.meta.url), 'utf8')
   assert.ok(yml.includes('- insert:'))
   assert.ok(!/replace:|remove:/.test(yml), 'bundle patch 禁止 replace/remove')
-  assert.ok(yml.includes('name: dsh-whale-pet'))
+  assert.ok(yml.includes('name: dsh-whalegirl'))
 })
 
 test('package.json dsh 声明完整', () => {

@@ -1,6 +1,15 @@
 {
-  "name": "dsh-whale-pet",
+  "name": "dsh-whalegirl",
   "version": "0.1.0",
+  "author": "duyanta123",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duyanta123/dsh-whale-pet.git"
+  },
+  "homepage": "https://github.com/duyanta123/dsh-whale-pet#readme",
+  "bugs": {
+    "url": "https://github.com/duyanta123/dsh-whale-pet/issues"
+  },
   "type": "module",
   "description": "鲸鱼娘桌宠：住进 DSH web 的鲸鱼娘。状态镜像（干活/思考/等待审批/报错/庆祝/空闲）、分区热区、拖拽、喂食、表情包气泡、Token/费用仪表板、XP/等级/称号养成、可关闭的主动陪伴。A whale-girl desktop pet for the DeepSeek Harness Web UI.",
   "icon": "assets/icon.png",
