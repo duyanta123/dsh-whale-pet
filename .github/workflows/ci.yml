@@ -1,4 +1,4 @@
-# dsh-whalegirl CI（M6-1）：node --test 单测 + test:compat 宿主探活双平台门禁。
+# dsh-whale-chan CI（M6-1）：node --test 单测 + test:compat 宿主探活双平台门禁。
 # compat 双车道自装宿主（0.1.7-rc.2 + 0.2.0-rc.2，npm 隔离安装，不动全局）；改车道须同步 scripts/compat.mjs 与开发计划 §1。
 name: CI
 
