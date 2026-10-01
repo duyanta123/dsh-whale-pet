@@ -37,6 +37,8 @@ jobs:
         with:
           node-version: 22
       - name: Install host baseline
-        run: npm i -g @deepseek-ai/dsh@0.1.7-rc.2
+        run: |
+          npm i -g pnpm
+          npm i -g @deepseek-ai/dsh@0.1.7-rc.2
       - name: Run compat gate
         run: npm run test:compat
