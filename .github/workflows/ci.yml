@@ -25,11 +25,13 @@ jobs:
 
   compat:
     name: compat (isolated profile probe)
+    # 仅 windows：compat 探活依赖 dsh profile init/add 的交互面，ubuntu runner 上
+    # dsh 子进程持有 stdio 管道导致脚本在内部超时后仍无法退出（2026-10-01 实测挂起 13min+）；
+    # 进程树击杀/泄漏自检本就是 win32 分支，windows 覆盖即可。ubuntu 由 unit job 把守。
     strategy:
       fail-fast: false
       matrix:
-        # windows-latest 覆盖进程树击杀/泄漏自检路径（compat.mjs 的 win32 分支）
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
