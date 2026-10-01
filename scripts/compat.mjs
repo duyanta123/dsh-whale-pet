@@ -14,6 +14,7 @@ import process from 'node:process'
 
 const DEFAULT_LANES = ['0.1.7-rc.2', '0.2.0-rc.2']
 const lanes = process.argv.slice(2).filter((a) => !a.startsWith('-'))
+if (lanes.length === 0) lanes.push(...DEFAULT_LANES)
 const PACKAGE_ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const BOOT_TIMEOUT_MS = 90_000
 const PROBE_PATH = '/api/whale-pet/state'
