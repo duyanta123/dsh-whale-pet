@@ -45,7 +45,7 @@ jobs:
 
       - name: Publish to npm
         if: steps.gate.outputs.publish == 'true'
-        run: npm publish --provenance
+        run: npm publish --provenance --access public # 首发新包必须显式 public，否则 provenance 生成被拒（实测 EUSAGE）
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
