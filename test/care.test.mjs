@@ -40,6 +40,20 @@ test('isNightMute：窗口可配（含非跨午夜与零长窗口）与开关', 
   assert.equal(isNightMute(at(3, 0), { startMin: 23 * 60, endMin: 5 * 60 }), true) // 自定义跨午夜
 })
 
+test('isNightMute 接线回归：client 直传 settings.night（muteEnabled 形状，无 enabled 字段）开关生效', () => {
+  // main.mjs 全部 8 处调用直传 settings.night——normalizeSettings 产出 { muteEnabled, startMin, endMin }，
+  // 没有 enabled 字段；判定函数必须认 muteEnabled，否则用户关掉「深夜静音」后静音段内
+  // 散步/短剧/关怀/番茄钟/余额轮询照常门控（2026-10-03 接线缺陷回归守护）。
+  const night = normalizeSettings({ night: { muteEnabled: false, startMin: 1380, endMin: 420 } }).night
+  assert.deepEqual(night, { muteEnabled: false, startMin: 1380, endMin: 420 }) // client 侧接线形状
+  assert.equal(isNightMute(at(23, 30), night), false) // 窗口内但开关已关 → 非静音
+  assert.equal(isNightMute(at(2, 0), night), false) // 跨午夜另一段同判
+  // 对照：开关开时窗口内照常判定静音；Node half 形状（index.mjs 映射的 { enabled }）语义不变。
+  assert.equal(isNightMute(at(23, 30), { ...night, muteEnabled: true }), true)
+  assert.equal(isNightMute(at(23, 30), { enabled: false, startMin: 1380, endMin: 420 }), false)
+  assert.equal(isNightMute(at(23, 30), { enabled: true, startMin: 1380, endMin: 420 }), true)
+})
+
 // ---- 关怀提醒（M5-1）：固定间隔 + 用户交互重置 ----
 const MIN45 = 45 * 60_000
 

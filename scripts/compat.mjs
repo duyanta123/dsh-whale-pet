@@ -25,11 +25,16 @@ let failures = 0
 const fail = (msg) => { failures += 1; console.error(`  ✗ ${msg}`) }
 const ok = (msg) => console.log(`  ✓ ${msg}`)
 
+/** PowerShell 单引号字面量：内部单引号按 PS 规则写两个；反斜杠/`$` 均为字面量，Windows 路径可原样嵌入。 */
+const psSingleQuoted = (s) => `'${s.replace(/'/g, "''")}'`
+
 /**
  * Windows 进程树击杀（2026-09-30 实测修正，见开发计划附录 B）：
  * 先对存活进程 taskkill /T /F，再补 child.kill()；
  * 另按命令行特征（profile 名每次运行唯一，不误伤其他 dsh 会话）做脱树孙进程兜底清扫。
  * 2026-10-01 起 dsh 以 `node <包>/lib/bin.js` 直启（不再经 shell 包装 .cmd），树更浅，击杀路径不变。
+ * 2026-10-03 修正：匹配改用 IndexOf 字符串包含——原 `-match` 把 tag（laneDir/dshEntry 等
+ * 含反斜杠路径）当正则，`\U` 等序列抛 ArgumentException 使 powershell 兜底整体静默失效。
  */
 function killTree(child, tag) {
   if (process.platform === 'win32') {
@@ -39,7 +44,7 @@ function killTree(child, tag) {
     try {
       spawn('powershell', ['-NoProfile', '-Command',
         `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | ` +
-        `Where-Object { $_.CommandLine -match '${tag}' } | ` +
+        `Where-Object { ([string]$_.CommandLine).IndexOf(${psSingleQuoted(tag)}, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 } | ` +
         `ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`], { shell: false })
     } catch {}
   }
@@ -53,7 +58,7 @@ function sweepProfilePids(tag) {
     try {
       const child = spawn('powershell', ['-NoProfile', '-Command',
         `Get-CimInstance Win32_Process -Filter "Name='node.exe'" | ` +
-        `Where-Object { $_.CommandLine -match '${tag}' } | ` +
+        `Where-Object { ([string]$_.CommandLine).IndexOf(${psSingleQuoted(tag)}, [System.StringComparison]::OrdinalIgnoreCase) -ge 0 } | ` +
         `ForEach-Object { $_.ProcessId }`], { shell: false })
       let out = ''
       child.stdout.on('data', (d) => { out += d })

@@ -1,6 +1,8 @@
 # npm 自动发版：push 到主干时，若 package.json 版本号在 registry 上不存在则自动 publish 并打 v<tag>。
 # 前置：仓库 Secrets 配 NPM_TOKEN（npmjs.com → Access Tokens → Generate，Automation/Granular 均可）。
 # 语义：push 不带版本号变更 = 只跑测试不发版；npm 同版本不可重发，因此「发版 = bump version」。
+# 门禁：unit tests + compat 双车道宿主探活（与 ci.yml 同一套，见 scripts/compat.mjs）。compat 红灯不发版
+# ——npm 同版本不可重发，ci.yml 的并行红灯追不回已发版本，故发版前必须原地等待 compat 绿。
 name: Publish
 
 on:
@@ -17,7 +19,29 @@ concurrency:
   cancel-in-progress: false # 排队执行，不中断进行中的发布
 
 jobs:
+  # 与 ci.yml:26-45 的 compat job 同一套双车道探活（0.1.7-rc.2 + 0.2.0-rc.2，npm 隔离安装不动全局）；
+  # 仅 windows：dsh 子进程在 ubuntu runner 上持有 stdio 管道导致脚本挂起（实测 13min+，详见 ci.yml:28-30）。
+  # publish 依赖本 job：红灯即不发版。
+  compat:
+    name: compat (isolated profile probe)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # dsh 由 scripts/compat.mjs 按车道隔离安装进临时目录；pnpm 必须在 PATH（dsh plugin add 转发）。
+      - name: Install pnpm
+        run: npm i -g pnpm
+      - name: Run compat gate (both lanes)
+        run: npm run test:compat
+
   publish:
+    needs: compat # compat 红灯时不进入本 job，npm publish 不会执行
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

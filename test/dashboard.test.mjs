@@ -31,10 +31,10 @@ test('barLayout：柱体几何归一化（最高柱顶满、空桶占位 h=0）'
   assert.ok(Math.abs(bars[0].x - bars[1].x) > 0)
 })
 
-test('barLayout：标签与 tooltip（小时 HH:00 / 天 MM-DD）', () => {
-  // 用本地时间构造（dashboard 标签按本地时区格式化；用例须时区无关——CI 在 UTC）
-  const t0 = new Date(2026, 8, 14, 10, 0).getTime() // 本地 10:00
-  const day0 = new Date(2026, 8, 14, 12, 0).getTime() // 本地正午，避开日界
+test('barLayout：标签与 tooltip（小时 HH:00 / 天 MM-DD，固定北京时区）', () => {
+  // 标签按固定北京偏移（UTC+8）格式化：用 UTC 毫秒构造北京时刻，用例与运行时区无关
+  const t0 = Date.UTC(2026, 8, 14, 2, 0) // 北京 2026-09-14 10:00（UTC 02:00）
+  const day0 = Date.UTC(2026, 8, 14, 4, 0) // 北京正午，避开日界
   const [hourBar] = barLayout([bucket(t0, 1234567, 0.1, 0.2, 0.05)], 'hours')
   assert.equal(hourBar.label, '10:00')
   assert.ok(hourBar.tip.includes('1.23M'))
@@ -48,10 +48,21 @@ test('barLayout：费用三桶合计（round4）', () => {
   assert.equal(bar.cost, 0.6001)
 })
 
-test('axisLabel：范围文案', () => {
-  const t0 = new Date(2026, 8, 14, 10, 0).getTime() // 本地 10:00（时区无关）
+test('axisLabel：范围文案（固定北京时区）', () => {
+  const t0 = Date.UTC(2026, 8, 14, 2, 0) // 北京 2026-09-14 10:00（时区无关）
   assert.ok(axisLabel([bucket(t0, 1)], 'hours').includes('10:00'))
   assert.ok(axisLabel([], 'days') === '')
+})
+
+test('barLayout/axisLabel：桶 start 按北京时区渲染，与查看者本地时区无关', () => {
+  // 北京 2026-10-03 10:00 = UTC 02:00；任意运行时区下都应渲染北京日期/小时
+  const bjTen = Date.UTC(2026, 9, 3, 2, 0)
+  const [hourBar] = barLayout([bucket(bjTen, 1)], 'hours')
+  assert.equal(hourBar.label, '10:00')
+  const [dayBar] = barLayout([bucket(bjTen, 1)], 'days')
+  assert.equal(dayBar.label, '10-03')
+  assert.equal(axisLabel([bucket(bjTen, 1)], 'hours'), '2026-10-03 10:00 起')
+  assert.equal(axisLabel([bucket(bjTen, 1)], 'days'), '2026-10-03 ~ 2026-10-03')
 })
 
 test('DASHBOARD_POS_KEY：localStorage 键名稳定', () => {
