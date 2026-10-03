@@ -21,6 +21,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # bbox-table.json 同步检查（test/bbox.test.mjs）真实运行 python tools/analyze-bbox.py --check，
+      # 工具以 PIL 做 alpha 扫描；runner 预装 python 但无 Pillow，缺依赖会在「解释器在但 --check 失败」分支直接红。
+      - name: Install Pillow (bbox 同步检查依赖)
+        run: python -m pip install --quiet --disable-pip-version-check pillow
       - run: npm test
 
   compat:
