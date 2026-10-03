@@ -1,0 +1,564 @@
+{
+  "_meta": {
+    "alphaMin": 8,
+    "coords": "normalized [0,1] of frame; x 镜像（flip=-1）由消费方 bbox.mjs 运行时处理",
+    "frame": "first",
+    "source": "assets/musume/*.webp 首帧 alpha>=8 不透明像素 bbox",
+    "tool": "tools/analyze-bbox.py",
+    "version": 1
+  },
+  "files": {
+    "dsh-whale-home-peek.webp": {
+      "x0": 0.0156,
+      "x1": 0.9844,
+      "y0": 0.0762,
+      "y1": 0.9219
+    },
+    "dsh-whale-settings-peek.webp": {
+      "x0": 0.2578,
+      "x1": 0.7402,
+      "y0": 0.0156,
+      "y1": 0.9824
+    },
+    "dsh-whale-state-abstract.webp": {
+      "x0": 0.1133,
+      "x1": 0.8867,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-achievement.webp": {
+      "x0": 0.1445,
+      "x1": 0.8555,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-afk.webp": {
+      "x0": 0.0195,
+      "x1": 0.9805,
+      "y0": 0.0723,
+      "y1": 0.9277
+    },
+    "dsh-whale-state-angry.webp": {
+      "x0": 0.1602,
+      "x1": 0.8379,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-balance-low.webp": {
+      "x0": 0.0977,
+      "x1": 0.9023,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-blush.webp": {
+      "x0": 0.166,
+      "x1": 0.834,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-bold.webp": {
+      "x0": 0.1602,
+      "x1": 0.8398,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-celebrate.webp": {
+      "x0": 0.1387,
+      "x1": 0.8613,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-cool-shades.webp": {
+      "x0": 0.1719,
+      "x1": 0.8262,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-curious.webp": {
+      "x0": 0.1367,
+      "x1": 0.8633,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-daily-coffee.webp": {
+      "x0": 0.1641,
+      "x1": 0.8359,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-daily-cooking.webp": {
+      "x0": 0.0781,
+      "x1": 0.9219,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-daily-done.webp": {
+      "x0": 0.1738,
+      "x1": 0.8262,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-daily-eat.webp": {
+      "x0": 0.1719,
+      "x1": 0.8262,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-daily-fishing.webp": {
+      "x0": 0.0859,
+      "x1": 0.9141,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-daily-gaming.webp": {
+      "x0": 0.1152,
+      "x1": 0.8848,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-daily-melt.webp": {
+      "x0": 0.0312,
+      "x1": 0.9688,
+      "y0": 0.1289,
+      "y1": 0.8711
+    },
+    "dsh-whale-state-daily-painting.webp": {
+      "x0": 0.0625,
+      "x1": 0.9355,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-daily-pajama.webp": {
+      "x0": 0.1543,
+      "x1": 0.8457,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-daily-picnic.webp": {
+      "x0": 0.0195,
+      "x1": 0.9805,
+      "y0": 0.0391,
+      "y1": 0.959
+    },
+    "dsh-whale-state-daily-shower.webp": {
+      "x0": 0.0996,
+      "x1": 0.9004,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-daily-stretch.webp": {
+      "x0": 0.1758,
+      "x1": 0.8242,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-eat.webp": {
+      "x0": 0.1465,
+      "x1": 0.8516,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-failure.webp": {
+      "x0": 0.1445,
+      "x1": 0.8555,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-festival-christmas.webp": {
+      "x0": 0.1602,
+      "x1": 0.8379,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-festival-halloween.webp": {
+      "x0": 0.125,
+      "x1": 0.873,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-festival-mid-autumn.webp": {
+      "x0": 0.1758,
+      "x1": 0.8242,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-festival-spring.webp": {
+      "x0": 0.125,
+      "x1": 0.873,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-game-cheat.webp": {
+      "x0": 0.0469,
+      "x1": 0.9531,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-game-happy.webp": {
+      "x0": 0.125,
+      "x1": 0.875,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-game-lose.webp": {
+      "x0": 0.166,
+      "x1": 0.834,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-game-think.webp": {
+      "x0": 0.1426,
+      "x1": 0.8574,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-game-win.webp": {
+      "x0": 0.166,
+      "x1": 0.832,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-greet.webp": {
+      "x0": 0.1406,
+      "x1": 0.8594,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-idle-cute.webp": {
+      "x0": 0.1484,
+      "x1": 0.8516,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-levelup.webp": {
+      "x0": 0.0723,
+      "x1": 0.9258,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-broke.webp": {
+      "x0": 0.0664,
+      "x1": 0.9316,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-cry.webp": {
+      "x0": 0.1191,
+      "x1": 0.8789,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-doge.webp": {
+      "x0": 0.1738,
+      "x1": 0.8242,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-doubt.webp": {
+      "x0": 0.1699,
+      "x1": 0.8281,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-heart.webp": {
+      "x0": 0.1289,
+      "x1": 0.8711,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-kyun.webp": {
+      "x0": 0.1367,
+      "x1": 0.8633,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-music.webp": {
+      "x0": 0.1484,
+      "x1": 0.8496,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-no.webp": {
+      "x0": 0.1738,
+      "x1": 0.8242,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-ojisan.webp": {
+      "x0": 0.1582,
+      "x1": 0.8398,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-omg.webp": {
+      "x0": 0.1445,
+      "x1": 0.8555,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-peace.webp": {
+      "x0": 0.1211,
+      "x1": 0.877,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-shock.webp": {
+      "x0": 0.1523,
+      "x1": 0.8457,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-sike.webp": {
+      "x0": 0.1328,
+      "x1": 0.8652,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-smile-pain.webp": {
+      "x0": 0.1582,
+      "x1": 0.8398,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-smug.webp": {
+      "x0": 0.1543,
+      "x1": 0.8457,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-meme-wakuwaku.webp": {
+      "x0": 0.0547,
+      "x1": 0.9453,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-worship.webp": {
+      "x0": 0.1289,
+      "x1": 0.8691,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-meme-yes.webp": {
+      "x0": 0.1699,
+      "x1": 0.8301,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-night.webp": {
+      "x0": 0.1738,
+      "x1": 0.8262,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-pick-up.webp": {
+      "x0": 0.1191,
+      "x1": 0.8809,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-react-belly.webp": {
+      "x0": 0.1445,
+      "x1": 0.8555,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-react-head.webp": {
+      "x0": 0.1562,
+      "x1": 0.8418,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-react-tail.webp": {
+      "x0": 0.0586,
+      "x1": 0.9414,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-running.webp": {
+      "x0": 0.1367,
+      "x1": 0.8652,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-sleep.webp": {
+      "x0": 0.1035,
+      "x1": 0.8965,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-star.webp": {
+      "x0": 0.1582,
+      "x1": 0.8418,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-success.webp": {
+      "x0": 0.1367,
+      "x1": 0.8633,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-sweep.webp": {
+      "x0": 0.0312,
+      "x1": 0.9688,
+      "y0": 0.0488,
+      "y1": 0.9492
+    },
+    "dsh-whale-state-tail-swing.webp": {
+      "x0": 0.1387,
+      "x1": 0.8594,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-teasing.webp": {
+      "x0": 0.1289,
+      "x1": 0.8711,
+      "y0": 0.0156,
+      "y1": 0.9824
+    },
+    "dsh-whale-state-thinking.webp": {
+      "x0": 0.1777,
+      "x1": 0.8203,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-tool.webp": {
+      "x0": 0.1094,
+      "x1": 0.8887,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-valentine.webp": {
+      "x0": 0.166,
+      "x1": 0.832,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-waiting.webp": {
+      "x0": 0.1562,
+      "x1": 0.8418,
+      "y0": 0.0156,
+      "y1": 0.9844
+    },
+    "dsh-whale-state-weather-cold.webp": {
+      "x0": 0.1895,
+      "x1": 0.8086,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-weather-rain-happy.webp": {
+      "x0": 0.1309,
+      "x1": 0.8691,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-weather-snow.webp": {
+      "x0": 0.0879,
+      "x1": 0.9102,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-weather-thunder.webp": {
+      "x0": 0.0195,
+      "x1": 0.9805,
+      "y0": 0.0449,
+      "y1": 0.9551
+    },
+    "dsh-whale-state-weather-umbrella.webp": {
+      "x0": 0.125,
+      "x1": 0.875,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-wink.webp": {
+      "x0": 0.1719,
+      "x1": 0.8281,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-boss.webp": {
+      "x0": 0.0391,
+      "x1": 0.959,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-celebrate.webp": {
+      "x0": 0.1133,
+      "x1": 0.8867,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-work-deadline.webp": {
+      "x0": 0.127,
+      "x1": 0.8711,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-debug.webp": {
+      "x0": 0.0195,
+      "x1": 0.9805,
+      "y0": 0.0273,
+      "y1": 0.9707
+    },
+    "dsh-whale-state-work-deploy.webp": {
+      "x0": 0.0957,
+      "x1": 0.9043,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-work-idea.webp": {
+      "x0": 0.1875,
+      "x1": 0.8105,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-meeting.webp": {
+      "x0": 0.0742,
+      "x1": 0.9238,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-work-pat.webp": {
+      "x0": 0.1504,
+      "x1": 0.8477,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-ram.webp": {
+      "x0": 0.1602,
+      "x1": 0.8398,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-review.webp": {
+      "x0": 0.125,
+      "x1": 0.875,
+      "y0": 0.0195,
+      "y1": 0.9805
+    },
+    "dsh-whale-state-work-slack-phone.webp": {
+      "x0": 0.1035,
+      "x1": 0.8945,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-slack.webp": {
+      "x0": 0.1426,
+      "x1": 0.8555,
+      "y0": 0.0312,
+      "y1": 0.9688
+    },
+    "dsh-whale-state-work-sleep.webp": {
+      "x0": 0.0312,
+      "x1": 0.9688,
+      "y0": 0.1582,
+      "y1": 0.8418
+    },
+    "dsh-whale-workbench-peek.webp": {
+      "x0": 0.2754,
+      "x1": 0.7246,
+      "y0": 0.0156,
+      "y1": 0.9844
+    }
+  }
+}

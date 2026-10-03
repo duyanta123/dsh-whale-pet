@@ -65,9 +65,10 @@ R14 idle 兜底       恒真
 深夜静音窗口（默认 23:00–07:00，本地时钟，可配可关）内：
 
 - **红线**：无主动气泡（关怀提醒/番茄钟/短剧全部静默，决策面在 `care.mjs`，静音段冻结番茄钟防跨窗补发）、无完成音效（Node half 播放前复查窗口）、无散步（`walkAllowed` 拒绝武装）。
-- **兜底视觉**：STATE_TABLE 命中 R14 idle 兜底行时显示 `night`（深夜困倦）而非 idle——实现为
-  `nightVisualState(selectState(...), nightMute)` 后置替换，不新增行序；`sleep→night` 不触发
-  wake 过渡（同为困倦视觉，`shouldWake` 排除 night）。
+- **兜底视觉**：STATE_TABLE 命中 R14 idle 兜底行时显示 `night`（深夜困倦）而非 idle——一期实现为
+  `nightVisualState(selectState(...), nightMute)` 后置替换，不新增行序；二期（2026-10-02）该调用点
+  升级为超集 `idleOverlayVisual`（见附录 A，`night` 语义逐点一致，`care.mjs` 零改动）；
+  `sleep→night` 不触发 wake 过渡（同为困倦视觉，`shouldWake` 排除 night）。
 - **状态镜像不静默**：think/wait/celebrate/error 等事实照常显示——深夜约束的是主动行为面，
   不是状态镜像职责本身。
 
@@ -122,3 +123,60 @@ error/disappointed 尾段（失败失落不该被新会话欢迎盖掉）；并�
 | 转身间隔 | 10000–25000ms |
 | WALK 间隔 | 18000–40000ms |
 | WALK 时长 | 4000–8000ms |
+
+---
+
+## 附录 A · 二期视觉覆盖（idle 兜底换装层，2026-10-02）
+
+二期新增的 15 个素材状态（game-×5 / balance-low / festival-×4 / weather-×5，全部入
+`EXTRA_STATE_ASSETS` 换装链）**不进 STATE_TABLE 行序**——它们是
+idle 兜底视觉覆盖层，状态集合仍为 **17 agent 状态 + 3 热区反应**（`docs/state-machine.md` §2
+唯一权威不变，`test/manifest.test.mjs:29` 长度断言照旧）。
+
+### A.1 覆盖合成（festival.mjs `idleOverlayVisual`，纯函数）
+
+`selectState(...)` 命中 R14 idle 兜底行时按固定优先级合成覆盖；`next !== 'idle'`（交互/镜像态）
+**原样返回，不覆盖**：
+
+```
+gamePose（游戏会话中，最高——用户主动交互属被动反馈面）
+  > night（深夜静音段兜底，M5-2 语义原样：严格 ===true 才生效）
+  > balanceLowPose（余额提醒伴随姿势，提醒面深夜静默故与 night 实际互斥）
+  > festival > weather > idle（无覆盖）
+```
+
+- `gamePose`：`game.mjs gamePose(phase)` 的产物，映射表见 A.2；结算面板关闭/游戏结束传 null 回状态机。
+- `night`：`isNightMute(now, settings.night)` 布尔结果（`care.mjs` 零改动，一期语义逐点一致）。
+- `balanceLowPose`：client 每帧算 `now < balanceLowUntil ? 'balance-low' : null`；`balanceLowUntil`
+  与提醒气泡 ms 同值（8000ms），窗口内稳定呈现、到期自然回落（**禁止直呼 `renderer.show`**——
+  会被下一 tick 立即回翻）。
+- `festivalId`：`festivalOf(now)?.id`（本地日历日每 tick 解析；农历查表 2026–2030，表外 null），
+  `settings.festival.enabled === false` 时 wiring 侧置 null。
+- `weatherId`：30min 低频轮询 `/api/whale-pet/weather` → `resolveWeatherId({code, tempC})`；
+  `'clear'`/未配置城市/失败 = 不换装；`settings.weather.enabled === false` 时不轮询。
+
+### A.2 game-* 姿势映射（素材仅 5 件，game-draw 复用 happy）
+
+| 游戏阶段 | 覆盖状态 | 素材 |
+|---|---|---|
+| 进行中默认 | game-think | musume/game-think |
+| 连击 ≥5 保持到断 | game-happy | musume/game-happy |
+| 点中炸弹后 ~1.5s | game-cheat | musume/game-cheat |
+| 结算 win / draw / lose | game-win / game-happy / game-lose | musume/game-win / game-happy / game-lose |
+
+事件事实（wait/celebrate/error）与交互（drag/eat）仍按 STATE_TABLE 行序正常覆盖游戏姿势
+（棋盘 DOM 不受影响）；游戏进行中散步插曲冻结（`armWalk` 回调与 tick 双重门控）。
+
+### A.3 覆盖状态集合（EXTRA_STATE_ASSETS 15 键，链首漂移守卫单源）
+
+| 覆盖状态 | 素材（链首，image/loop 单链） | 触发通道 |
+|---|---|---|
+| game-think / game-happy / game-cheat / game-win / game-lose | musume/game-* | gamePose |
+| balance-low | musume/balance-low | balanceLowPose |
+| festival-spring / festival-christmas / festival-halloween / festival-mid-autumn | musume/festival-* | festivalId |
+| weather-rain（例外映射：素材名带 -happy）/ weather-snow / weather-thunder / weather-umbrella / weather-cold | musume/weather-* | weatherId |
+
+15 键入 `assets-manifest.mjs EXTRA_STATE_ASSETS`（`resolveStateChain` 回落解析，素材缺失照走
+降级链到占位头像）；链首与 `bbox.mjs BBOX_STATE_FILES` 的一致性由 `test/manifest.test.mjs`
+漂移断言单源回归。热区命中对覆盖状态同样生效（main.mjs 直呼 `bbox.mjs bboxHit`，表优先；
+`hitzone.mjs` 零修改）。
